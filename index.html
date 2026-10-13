@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💌 Nhận thư</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(135deg, #20286e, #71336e, #c13c78);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: 92%;
+  max-width: 650px;
+  padding: 20px;
+  text-align: center;
+  animation: appear 1.2s ease;
+}
+
+h1 {
+  font-size: clamp(25px, 5vw, 40px);
+  text-shadow: 0 0 18px white;
+  margin-bottom: 30px;
+}
+
+#photo {
+  display: none;
+  max-width: 100%;
+  max-height: 55vh;
+  width: auto;
+  height: auto;
+  margin: 25px auto;
+  border: 4px solid white;
+  border-radius: 18px;
+  box-shadow: 0 0 30px #ffffff80;
+  animation: appear 1s ease;
+}
+
+button {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 35px;
+  background: #f04487;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 22px #ff8cbd;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.06);
+  background: #ff5a9a;
+}
+
+#status {
+  font-size: 14px;
+  margin-top: 18px;
+}
+
+.flower {
+  position: fixed;
+  bottom: -60px;
+  z-index: 1;
+  pointer-events: none;
+  animation: floatUp var(--duration) linear forwards;
+  filter: drop-shadow(0 0 5px #ffffff80);
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--drift), -115vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="content">
+
+  <h1 id="heading">💌 Có một lá thư dành cho bạn 💌</h1>
+
+  <!-- THAY anh.jpg BẰNG TÊN ẢNH CỦA BẠN -->
+  <img
+    id="photo"
+    src="ruoi.jpg"
+    alt="Ảnh của bạn"
+  >
+
+  <!-- THAY piano.mp3 BẰNG TÊN FILE NHẠC CỦA BẠN -->
+  <audio id="music" loop preload="auto">
+    <source src="damcuoi.mp3" type="audio/mpeg">
+  </audio>
+
+  <button id="receiveButton" onclick="openLetter()">
+    💖 NHẬN THƯ
+  </button>
+
+  <p id="status"></p>
+
+</div>
+
+<script>
+const photo = document.getElementById("photo");
+const music = document.getElementById("music");
+const button = document.getElementById("receiveButton");
+const heading = document.getElementById("heading");
+const statusText = document.getElementById("status");
+
+let opened = false;
+
+// Bấm nhận thư: hiện ảnh, phát nhạc và thả hoa
+async function openLetter() {
+  if (!opened) {
+    opened = true;
+
+    photo.style.display = "block";
+    heading.style.display = "none";
+    button.textContent = "💗 TẠM DỪNG NHẠC";
+
+    // Hoa bay lên ngay khi mở thư
+    for (let i = 0; i < 20; i++) {
+      setTimeout(createFlower, i * 180);
+    }
+  }
+
+  // Bấm lần nữa để tạm dừng hoặc phát lại nhạc
+  if (music.paused) {
+    try {
+      await music.play();
+      button.textContent = "💗 TẠM DỪNG NHẠC";
+      statusText.textContent = "🎵 Đang phát nhạc...";
+    } catch (error) {
+      statusText.textContent =
+        "Không phát được nhạc. Hãy kiểm tra tên file piano.mp3.";
+    }
+  } else {
+    music.pause();
+    button.textContent = "🎵 PHÁT NHẠC";
+    statusText.textContent = "Nhạc đang tạm dừng.";
+  }
+}
+
+// Tạo hoa bay từ dưới màn hình lên trên
+function createFlower() {
+  const flower = document.createElement("span");
+  flower.className = "flower";
+
+  const flowers = ["🌻", "✿", "❀", "🌼", "✾", "❁"];
+  flower.textContent =
+    flowers[Math.floor(Math.random() * flowers.length)];
+
+  flower.style.left = Math.random() * 100 + "vw";
+  flower.style.fontSize = (22 + Math.random() * 24) + "px";
+  flower.style.setProperty(
+    "--duration",
+    (7 + Math.random() * 6) + "s"
+  );
+  flower.style.setProperty(
+    "--drift",
+    (Math.random() * 180 - 90) + "px"
+  );
+
+  document.body.appendChild(flower);
+
+  flower.addEventListener("animationend", function() {
+    flower.remove();
+  });
+}
+
+// Hoa tiếp tục bay sau khi mở thư
+setInterval(function() {
+  if (opened) {
+    createFlower();
+  }
+}, 600);
+</script>
+
+</body>
+</html>
